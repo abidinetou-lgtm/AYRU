@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AYRU_VERSION', '1.2.0' );
+define( 'AYRU_VERSION', '1.3.0' );
 
 function ayru_setup(): void {
 	load_theme_textdomain( 'ayru', get_template_directory() . '/languages' );
@@ -80,6 +80,10 @@ function ayru_customize_register( WP_Customize_Manager $customizer ): void {
 		'instagram_url' => array( 'Lien Instagram', '' ),
 		'tiktok_url'    => array( 'Lien TikTok', '' ),
 		'pinterest_url' => array( 'Lien Pinterest', '' ),
+		'youtube_url'   => array( 'Lien YouTube', '' ),
+		'ga4_id'        => array( 'Google Analytics 4 (G-XXXXXXXXXX)', '' ),
+		'meta_pixel_id' => array( 'Pixel Meta / Instagram (identifiant)', '' ),
+		'tiktok_pixel_id' => array( 'Pixel TikTok (identifiant)', '' ),
 	);
 	foreach ( $settings as $key => $config ) {
 		$is_url   = str_ends_with( $key, '_url' );
@@ -113,6 +117,10 @@ function ayru_icon( string $name, int $size = 22 ): string {
 		'plus' => '<path d="M12 5v14M5 12h14"/>',
 		'minus' => '<path d="M5 12h14"/>',
 		'share' => '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4"/>',
+		'instagram' => '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="16.9" cy="7.1" r=".9" fill="currentColor" stroke="none"/>',
+		'tiktok' => '<path d="M14.8 3.5c.5 2.2 1.9 3.5 4.2 3.7v3.1c-1.6.1-3-.4-4.2-1.3v5.8a5.6 5.6 0 1 1-4.9-5.5v3.2a2.5 2.5 0 1 0 1.9 2.4V3.5h3Z"/>',
+		'youtube' => '<rect x="2.5" y="6" width="19" height="12" rx="3.5"/><path d="m10.4 9.4 5.2 2.6-5.2 2.6V9.4Z"/>',
+		'pinterest' => '<circle cx="12" cy="12" r="9"/><path d="M9.7 20.1c-.5-1.5-.1-3.1.2-4.5l1-4.3a3 3 0 0 1 3-3.6c1.6 0 2.7 1.2 2.7 2.9 0 2-1.1 4.3-2.9 4.3-.9 0-1.5-.7-1.3-1.6"/>',
 	);
 	$path = $icons[ $name ] ?? $icons['arrow'];
 	return sprintf( '<svg class="ayru-icon" width="%1$d" height="%1$d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">%2$s</svg>', $size, $path );
@@ -331,3 +339,48 @@ function ayru_category_icon( string $slug ): string {
 	);
 	return $map[ $slug ] ?? 'sparkle';
 }
+
+/**
+ * Traceurs de mesure d'audience et de publicite.
+ *
+ * Les scripts sont emis en `type="text/plain"` avec l'attribut
+ * `data-ayru-consent` : le navigateur ne les execute pas. Ils ne sont actives
+ * qu'apres acceptation explicite dans le bandeau de consentement (voir
+ * assets/js/main.js). Sans identifiant renseigne dans le personnalisateur,
+ * rien n'est emis du tout.
+ */
+function ayru_tracking_scripts(): void {
+	if ( is_admin() ) {
+		return;
+	}
+
+	$ga4    = trim( (string) get_theme_mod( 'ayru_ga4_id', '' ) );
+	$meta   = trim( (string) get_theme_mod( 'ayru_meta_pixel_id', '' ) );
+	$tiktok = trim( (string) get_theme_mod( 'ayru_tiktok_pixel_id', '' ) );
+
+	if ( $ga4 ) {
+		printf(
+			'<script type="text/plain" data-ayru-consent async src="https://www.googletagmanager.com/gtag/js?id=%s"></script>',
+			esc_attr( $ga4 )
+		);
+		printf(
+			'<script type="text/plain" data-ayru-consent>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config",%s);</script>',
+			wp_json_encode( $ga4 )
+		);
+	}
+
+	if ( $meta ) {
+		printf(
+			'<script type="text/plain" data-ayru-consent>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init",%s);fbq("track","PageView");</script>',
+			wp_json_encode( $meta )
+		);
+	}
+
+	if ( $tiktok ) {
+		printf(
+			'<script type="text/plain" data-ayru-consent>!function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];ttq.setAndDefer=function(e,i){e[i]=function(){e.push([i].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.load=function(e){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=i;ttq._t=ttq._t||{};ttq._t[e]=+new Date;ttq._o=ttq._o||{};ttq._o[e]={};var o=d.createElement("script");o.type="text/javascript";o.async=!0;o.src=i+"?sdkid="+e+"&lib="+t;var a=d.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};ttq.load(%s);ttq.page();}(window,document,"ttq");</script>',
+			wp_json_encode( $tiktok )
+		);
+	}
+}
+add_action( 'wp_footer', 'ayru_tracking_scripts', 20 );

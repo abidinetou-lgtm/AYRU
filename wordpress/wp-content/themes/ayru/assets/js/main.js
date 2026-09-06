@@ -235,3 +235,72 @@
   document.querySelectorAll('.woocommerce-ordering select, form.variations_form select').forEach(enhanceSelect);
   document.addEventListener('click', (event) => { if (!event.target.closest('.ayru-select')) closeSelects(); });
 })();
+
+/**
+ * Consentement aux traceurs.
+ *
+ * Regles retenues (CNIL) : aucun traceur publicitaire avant choix explicite,
+ * refus aussi simple que l'acceptation, choix conserve six mois, et
+ * possibilite de revenir sur son choix via un lien portant data-consent-reset.
+ * Les scripts de mesure sont declares en type="text/plain" avec l'attribut
+ * data-ayru-consent ; ils ne sont actives qu'apres acceptation.
+ */
+(function () {
+	var KEY = 'ayru_consent';
+	var banner = document.getElementById('ayru-consent');
+
+	function read() {
+		try { return localStorage.getItem(KEY); } catch (e) { return null; }
+	}
+
+	function write(value) {
+		try { localStorage.setItem(KEY, value); } catch (e) {}
+		document.cookie = KEY + '=' + value + ';path=/;max-age=' + (60 * 60 * 24 * 182) + ';SameSite=Lax';
+	}
+
+	// Active les scripts mis en attente et previent le reste de la page.
+	function unlock() {
+		document.querySelectorAll('script[type="text/plain"][data-ayru-consent]').forEach(function (node) {
+			var live = document.createElement('script');
+			for (var i = 0; i < node.attributes.length; i++) {
+				var attr = node.attributes[i];
+				if (attr.name !== 'type' && attr.name !== 'data-ayru-consent') {
+					live.setAttribute(attr.name, attr.value);
+				}
+			}
+			live.text = node.text;
+			node.parentNode.replaceChild(live, node);
+		});
+		document.dispatchEvent(new CustomEvent('ayru:consent', { detail: { granted: true } }));
+	}
+
+	function decide(value) {
+		write(value);
+		if (banner) { banner.hidden = true; }
+		if (value === 'accept') { unlock(); }
+	}
+
+	var stored = read();
+	if (stored === 'accept') {
+		unlock();
+	} else if (!stored && banner) {
+		banner.hidden = false;
+	}
+
+	if (banner) {
+		banner.addEventListener('click', function (event) {
+			var button = event.target.closest('[data-consent]');
+			if (button) { decide(button.getAttribute('data-consent')); }
+		});
+	}
+
+	// Permet de rouvrir le choix depuis la page Cookies.
+	document.addEventListener('click', function (event) {
+		if (event.target.closest('[data-consent-reset]')) {
+			event.preventDefault();
+			try { localStorage.removeItem(KEY); } catch (e) {}
+			document.cookie = KEY + '=;path=/;max-age=0';
+			if (banner) { banner.hidden = false; }
+		}
+	});
+})();

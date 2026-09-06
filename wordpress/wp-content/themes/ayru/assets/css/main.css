@@ -648,3 +648,24 @@ p, .hero-lead { text-wrap: pretty; }
 /* 13. Liens "Voir tout" : conformes (24px) mais peu confortables au pouce.
        On les passe a 32px sur mobile sans toucher au rythme desktop. */
 @media (max-width: 920px) { .text-link { min-height: 32px; } }
+
+/* 14. Liens sociaux du pied de page : pastilles au lieu de liens texte. */
+.social-link { display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid var(--ayru-border); border-radius: 50%; background: #fff; color: var(--ayru-purple-dark); transition: transform .18s ease, background .18s ease; }
+.social-link:hover { transform: translateY(-2px); background: var(--ayru-lilac); }
+.social-links { margin-top: 14px; }
+
+/* 15. Bandeau de consentement cookies.
+       Obligatoire avant tout depot de traceur publicitaire (CNIL).
+       Refuser doit etre aussi simple qu'accepter : les deux boutons ont le
+       meme poids visuel, aucun pre-cochage, et le choix est memorise 6 mois. */
+.ayru-consent { position: fixed; z-index: 1200; right: 16px; bottom: 16px; left: 16px;
+  display: grid; gap: 14px; max-width: 560px; margin-inline: auto; padding: 20px 22px;
+  border: 1px solid var(--ayru-border); border-radius: var(--ayru-radius);
+  background: #fff; box-shadow: 0 18px 50px rgba(24,20,61,.20); }
+.ayru-consent[hidden] { display: none; }
+.ayru-consent h2 { margin: 0; font-size: 1.05rem; }
+.ayru-consent p { margin: 0; color: #514d68; font-size: .82rem; line-height: 1.5; }
+.ayru-consent p a { color: var(--ayru-purple-dark); text-decoration: underline; }
+.ayru-consent__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.ayru-consent__actions .button { flex: 1 1 150px; min-height: 46px; }
+@media (max-width: 920px) { .ayru-consent { bottom: 82px; } }
