@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AYRU_VERSION', '1.4.0' );
+define( 'AYRU_VERSION', '1.5.0' );
 
 function ayru_setup(): void {
 	load_theme_textdomain( 'ayru', get_template_directory() . '/languages' );

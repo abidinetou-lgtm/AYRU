@@ -13,7 +13,7 @@ while ( have_posts() ) :
 	$heroes = array(
 		'mon-compte'        => array( 'Votre espace', 'Connectez-vous ou créez votre compte AYRU.', 'neb-account-welcome.webp' ),
 		'favoris'           => array( 'Vos coups de cœur', 'Retrouvez facilement les produits que vous aimez.', 'neb-favorites-heart.webp' ),
-		'ma-liste'          => array( 'Préparer en douceur', 'Créez et partagez votre Liste AYRU avec vos proches.', 'neb-birth-list.webp' ),
+		'ma-liste'          => array( 'Préparer en douceur', 'Créez et partagez votre Liste AYRU avec vos proches.', 'neb-wish-list.webp' ),
 		'suivi-commande'    => array( 'Votre colis', 'Consultez l’avancement réel de votre commande.', 'neb-order-tracking.webp' ),
 		'contact'           => array( 'Nous sommes là', 'Une question ? Écrivez à l’équipe AYRU.', 'neb-support.webp' ),
 		'faq'               => array( 'Besoin d’aide ?', 'Les réponses utiles, réunies au même endroit.', 'neb-support.webp' ),

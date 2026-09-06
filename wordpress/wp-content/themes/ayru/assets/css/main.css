@@ -145,7 +145,7 @@ p { margin: 0 0 1em; }
 .universe-intro { padding: 15px 12px; }
 .universe-intro h2 { font-size: clamp(1.3rem, 1.8vw, 1.85rem); }
 .universe-card { position: relative; display: flex; min-height: 235px; align-items: end; gap: 7px; overflow: hidden; padding: 14px; border-radius: 14px; background: #eee7df; font-weight: 750; }
-.universe-card--room { background: linear-gradient(0deg, rgba(24,20,61,.32), transparent 55%), url('../images/hero/baby-room-mobile.webp') center/cover; color: #fff; }
+.universe-card--room { background: linear-gradient(0deg, rgba(24,20,61,.32), transparent 55%), url('../images/hero/cosy-room-mobile.webp') center/cover; color: #fff; }
 .universe-card--plush { background: #f3e9e9; }
 .universe-card--plush img { position: absolute; inset: 0; width: 100%; height: 100%; padding: 8px; object-fit: contain; object-position: center bottom; }
 .universe-card span, .universe-card svg { position: relative; z-index: 1; }
@@ -216,7 +216,7 @@ p { margin: 0 0 1em; }
 .category-hero { min-height: 260px; display: flex; align-items: center; overflow: hidden; padding: 40px; border-radius: 24px; background-color: #ede5ff; background-image: linear-gradient(90deg, rgba(248,239,255,.96), rgba(237,229,255,.72)), url('../images/hero/clouds-desktop.webp'); background-position: center; background-size: cover; }
 .category-hero > div { max-width: 580px; }
 .category-hero h1 { font-size: clamp(2.4rem, 4.5vw, 4.2rem); }
-.category-hero--baby { min-height: 310px; background-image: linear-gradient(90deg, rgba(245,235,255,.96) 5%, rgba(245,235,255,.77) 41%, transparent 68%), url('../images/hero/category-baby-desktop.webp'); background-position: center; background-size: cover; }
+.category-hero--cosy { min-height: 310px; background-image: linear-gradient(90deg, rgba(245,235,255,.96) 5%, rgba(245,235,255,.77) 41%, transparent 68%), url('../images/hero/category-cosy-desktop.webp'); background-position: center; background-size: cover; }
 .term-description p { margin-bottom: 0; }
 .subcategories { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; margin: 12px 0 20px; }
 .subcategories a { display: grid; place-items: center; gap: 7px; padding: 10px; border-radius: 12px; background: #f6f1ff; font-size: .72rem; font-weight: 700; text-align: center; }
@@ -472,7 +472,7 @@ body.woocommerce-checkout .announcement-bar, body.woocommerce-checkout .desktop-
   .content-grid { grid-template-columns: 1fr; }
   .category-hero { min-height: 420px; align-items: start; padding: 28px 20px; }
   .category-hero { min-height: 360px; background-image: linear-gradient(180deg, rgba(248,239,255,.96), rgba(237,229,255,.58)), url('../images/hero/clouds-mobile.webp'); }
-  .category-hero--baby { background-image: linear-gradient(180deg, rgba(245,235,255,.96) 4%, rgba(245,235,255,.8) 38%, transparent 63%), url('../images/hero/category-baby-mobile.webp'); background-position: center; }
+  .category-hero--cosy { background-image: linear-gradient(180deg, rgba(245,235,255,.96) 4%, rgba(245,235,255,.8) 38%, transparent 63%), url('../images/hero/category-cosy-mobile.webp'); background-position: center; }
   .category-hero h1 { font-size: 2.7rem; }
   .subcategories { display: flex; overflow-x: auto; }
   .subcategories a { min-width: 90px; }
@@ -669,3 +669,23 @@ p, .hero-lead { text-wrap: pretty; }
 .ayru-consent__actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .ayru-consent__actions .button { flex: 1 1 150px; min-height: 46px; }
 @media (max-width: 920px) { .ayru-consent { bottom: 82px; } }
+
+/* 16. Encarts WooCommerce : les liens simples tombaient dans la colonne de
+       l'icone. Sous 680 px la grille n'a que deux colonnes (26px + 1fr) et le
+       lien "Cliquez ici pour saisir votre code" heritait des 26 px, ce qui le
+       coupait lettre par lettre. On lui donne sa propre ligne pleine largeur. */
+@media (max-width: 680px) {
+  .woocommerce-message > a:not(.button),
+  .woocommerce-info > a:not(.button),
+  .woocommerce-error > a:not(.button) {
+    grid-column: 1 / -1; grid-row: auto; justify-self: start;
+    margin-top: 2px; font-weight: 700; text-decoration: underline;
+  }
+}
+
+/* 17. Tuile "Maison & Cosy" : la regle d'origine servait l'image mobile
+       (portrait 1024x1536) a toutes les largeurs, donc etiree dans une tuile
+       large sur desktop. On sert la variante paysage au-dela de 920 px. */
+@media (min-width: 921px) {
+  .universe-card--room { background-image: linear-gradient(0deg, rgba(24,20,61,.32), transparent 55%), url('../images/hero/cosy-room-desktop.webp'); }
+}

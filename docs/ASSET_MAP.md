@@ -38,7 +38,7 @@ Les originaux sont conservés dans `AYRU/AYRU`. Les assets utiles au site sont c
 | Fichier | Usage |
 |---|---|
 | `Asset/home-hero-neb-bed desktop.png` / `mobile.png` | Hero de l'accueil, image prioritaire/LCP |
-| `Asset/category-baby-hero-neb desktop.png` / `mobile.png` | Hero de la catégorie Bébé |
+| `Asset/category-baby-hero-neb desktop.png` / `mobile.png` | Archivé — remplacé après repositionnement |
 | `Asset/hero-clouds-lilac desktop.png` / `mobile.png` | Fond hero alternatif éditorial |
 | `Asset/neb-baby-room desktop.png` / `mobile.png` | Tuile/section Chambre & Déco |
 | `Asset/section-lilac-clouds.png` | Fond d'encart éditorial |
@@ -89,3 +89,27 @@ Les originaux sont conservés dans `AYRU/AYRU`. Les assets utiles au site sont c
 ## Contenu social
 
 Le dossier `Ep 1 asset pour les video des reso` contient un MP3 ElevenLabs et 18 images de production verticale/horizontale. Ces éléments sont inventoriés mais volontairement exclus du build web : ils correspondent à un épisode social, pas à des fiches produit ou à l'interface approuvée.
+
+
+## Révision du 6 septembre 2026 — repositionnement déco / maison / femme
+
+Cinq illustrations ont été régénérées pour sortir de l'univers bébé. Les anciennes
+(`category-baby-*`, `baby-room-*`, `neb-baby-room *`, `neb-birth-list.*`) ont été
+supprimées du thème après vérification qu'aucune référence ne subsistait.
+
+| Nouveau fichier | Dimensions | Rôle |
+|---|---|---|
+| `hero/category-cosy-desktop.webp` / `-mobile.webp` | 1672×941 / 1024×1536 | Hero de la collection Maison & Cosy |
+| `hero/cosy-room-desktop.webp` / `-mobile.webp` | 1672×941 / 1024×1536 | Tuile « Nos univers », variante paysage servie au-delà de 920 px |
+| `neb/neb-wish-list.webp` | 1374×1145 | Bloc Ma Liste AYRU, page `/ma-liste/` et guides |
+
+Les PNG d'origine sont conservés à côté des WebP, selon la convention du thème.
+La conversion ramène le poids servi de 9,4 Mo à 449 Ko, soit 94 à 96 % de gain par
+fichier — indispensable pour une audience majoritairement mobile.
+
+La classe CSS `.category-hero--baby` est devenue `.category-hero--cosy`, et la
+variable `$is_baby` de `archive-product.php` est devenue `$is_cosy`.
+
+Réserve connue : deux visuels comportent du texte anglais lisible en décor
+(« Good Days », « A Brighter You », « Good Things Take Time », « Small Steps »).
+Discret mais incohérent pour une boutique française ; à régénérer si besoin.

@@ -2,11 +2,11 @@
 defined( 'ABSPATH' ) || exit;
 get_header();
 $theme_uri = get_template_directory_uri();
-$is_baby   = is_product_category( 'maison-cosy' );
+$is_cosy   = is_product_category( 'maison-cosy' );
 ?>
 <main id="main-content" class="shop-layout section-shell">
 	<?php woocommerce_breadcrumb(); ?>
-	<section class="category-hero <?php echo $is_baby ? 'category-hero--baby' : ''; ?>">
+	<section class="category-hero <?php echo $is_cosy ? 'category-hero--cosy' : ''; ?>">
 		<div><p class="eyebrow"><?php echo is_shop() ? 'La boutique AYRU' : 'Un univers AYRU'; ?></p><h1><?php woocommerce_page_title(); ?></h1><?php do_action( 'woocommerce_archive_description' ); ?></div>
 	</section>
 	<div class="subcategories" aria-label="Sous-catégories">
