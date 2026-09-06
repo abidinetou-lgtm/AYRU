@@ -1,0 +1,21 @@
+# Secrets et configuration locale
+.env
+*.local
+
+# Archive dupliquant le dossier AYRU/ (116 Mo, inutile en versionnement)
+AYRU.zip
+
+# Dependances et artefacts
+node_modules/
+vendor/
+*.log
+
+# Systeme
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# WordPress : seuls le theme et le plugin AYRU sont versionnes
+wordpress/wp-content/uploads/
+wordpress/wp-content/upgrade/
+wordpress/wp-content/cache/

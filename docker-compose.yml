@@ -1,0 +1,62 @@
+services:
+  database:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${WORDPRESS_DB_NAME:-ayru}
+      MARIADB_USER: ${WORDPRESS_DB_USER:-ayru}
+      MARIADB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-ayru_local_only}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root_local_only}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  wordpress:
+    image: wordpress:php8.3-apache
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - "${AYRU_PORT:-8080}:80"
+    environment:
+      WORDPRESS_DB_HOST: database:3306
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-ayru}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-ayru}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-ayru_local_only}
+      WORDPRESS_DEBUG: ${WORDPRESS_DEBUG:-1}
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./wordpress/wp-content/themes/ayru:/var/www/html/wp-content/themes/ayru
+      - ./wordpress/wp-content/plugins/ayru-core:/var/www/html/wp-content/plugins/ayru-core
+      - uploads_data:/var/www/html/wp-content/uploads
+
+  wpcli:
+    image: wordpress:cli-php8.3
+    entrypoint: ["wp"]
+    depends_on:
+      database:
+        condition: service_healthy
+      wordpress:
+        condition: service_started
+    user: "33:33"
+    environment:
+      WORDPRESS_DB_HOST: database:3306
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-ayru}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-ayru}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-ayru_local_only}
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./wordpress/wp-content/themes/ayru:/var/www/html/wp-content/themes/ayru
+      - ./wordpress/wp-content/plugins/ayru-core:/var/www/html/wp-content/plugins/ayru-core
+      - uploads_data:/var/www/html/wp-content/uploads
+    working_dir: /var/www/html
+
+volumes:
+  db_data:
+  wordpress_data:
+  uploads_data:
