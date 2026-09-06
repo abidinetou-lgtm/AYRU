@@ -689,3 +689,32 @@ p, .hero-lead { text-wrap: pretty; }
 @media (min-width: 921px) {
   .universe-card--room { background-image: linear-gradient(0deg, rgba(24,20,61,.32), transparent 55%), url('../images/hero/cosy-room-desktop.webp'); }
 }
+
+/* 18. Alignement des cartes produit.
+       Les titres sur une ou deux lignes decalaient les prix et les boutons
+       d une carte a l autre. On fixe la hauteur du titre a deux lignes et on
+       pousse les actions en bas, pour que toute la rangee s aligne. */
+.product-card { display: flex; height: 100%; flex-direction: column; }
+.product-card__body { display: flex; flex: 1; flex-direction: column; }
+.product-card__body h3 {
+  display: -webkit-box; min-height: 2.6em; -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; text-overflow: clip;
+}
+.product-card__actions { margin-top: auto; padding-top: 8px; }
+.woocommerce .shop-products ul.products, .shop-products ul.products,
+.product-rail, .ayru-product-grid { align-items: stretch; }
+.shop-products ul.products > li.product { display: flex; }
+
+/* 19. Etat vide d une collection : meme traitement que les autres etats AYRU. */
+.shop-products .empty-state { margin: 10px 0 30px; }
+
+/* 20. Bouton principal AYRU sur les pages WooCommerce.
+       `.woocommerce a.button` (0,2,1) l emportait sur `.button--primary` (0,1,0)
+       et repeignait en pale les boutons principaux des etats vides et des heros.
+       On aligne la specificite plutot que d empiler des !important. */
+.woocommerce a.button.button--primary,
+.woocommerce button.button.button--primary,
+.woocommerce input.button.button--primary { background: var(--ayru-ink); color: #fff; box-shadow: 0 9px 18px rgba(24,20,61,.13); }
+.woocommerce a.button.button--primary:hover,
+.woocommerce button.button.button--primary:hover { background: #28205f; }
+.woocommerce a.button.button--secondary { border-color: #c9c0e8; background: rgba(255,255,255,.78); color: var(--ayru-ink); }

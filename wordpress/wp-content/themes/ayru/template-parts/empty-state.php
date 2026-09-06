@@ -6,6 +6,7 @@ $states = array(
 	'favorites' => array( 'neb-favorites-heart.webp', 'Aucun favori pour le moment', 'Gardez ici toutes vos jolies découvertes.' ),
 	'orders' => array( 'empty-orders.webp', 'Aucune commande', 'Votre première aventure AYRU commencera ici.' ),
 	'search' => array( 'search-empty.webp', 'Aucun résultat', 'Essayez un autre mot ou explorez nos univers.' ),
+	'shop' => array( 'neb-searching.webp', 'Rien à afficher ici pour l’instant', 'Cet univers se remplit bientôt. En attendant, il y a de jolies choses à côté.' ),
 );
 $state = $states[ $type ] ?? $states['search'];
 ?>
