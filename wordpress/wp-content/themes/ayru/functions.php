@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AYRU_VERSION', '1.3.0' );
+define( 'AYRU_VERSION', '1.4.0' );
 
 function ayru_setup(): void {
 	load_theme_textdomain( 'ayru', get_template_directory() . '/languages' );
@@ -132,8 +132,9 @@ function ayru_logo(): string {
 
 function ayru_primary_fallback(): void {
 	$links = array(
-		'Bébé' => '/categorie-produit/bebe/', 'Chambre & Déco' => '/categorie-produit/chambre-deco/',
-		'Peluches' => '/categorie-produit/peluches/', 'Cadeaux' => '/categorie-produit/cadeaux/',
+		'Maison & Cosy' => '/categorie-produit/maison-cosy/', 'Déco murale' => '/categorie-produit/deco-murale/',
+		'Pyjamas & Détente' => '/categorie-produit/pyjamas-detente/', 'Papeterie' => '/categorie-produit/papeterie/',
+		'Cadeaux' => '/categorie-produit/cadeaux/',
 		'Tendances' => '/categorie-produit/tendances/', 'Guides & Conseils' => '/guides/',
 	);
 	echo '<ul class="menu">';
@@ -328,9 +329,10 @@ add_action( 'wp_head', 'ayru_structured_data', 20 );
  */
 function ayru_category_icon( string $slug ): string {
 	$map = array(
-		'bebe'          => 'home',
-		'chambre-deco'  => 'sparkle',
-		'peluches'      => 'heart',
+		'maison-cosy'     => 'home',
+		'deco-murale'     => 'sparkle',
+		'pyjamas-detente' => 'heart',
+		'papeterie'       => 'book',
 		'cadeaux'       => 'gift',
 		'tendances'     => 'star',
 		'guides'        => 'book',

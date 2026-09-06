@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'WooCommerce' ) || 'v2' === get_option( 'ayru_demo_seeded' ) ) { return; }
 
-$categories = array( 'Bébé' => 'bebe', 'Chambre & Déco' => 'chambre-deco', 'Peluches' => 'peluches', 'Cadeaux' => 'cadeaux', 'Tendances' => 'tendances' );
+$categories = array( 'Maison & Cosy' => 'maison-cosy', 'Déco murale' => 'deco-murale', 'Pyjamas & Détente' => 'pyjamas-detente', 'Papeterie' => 'papeterie', 'Cadeaux' => 'cadeaux', 'Tendances' => 'tendances' );
 $term_ids = array();
 foreach ( $categories as $name => $slug ) {
 	$existing = term_exists( $slug, 'product_cat' );
@@ -16,16 +16,16 @@ foreach ( $categories as $name => $slug ) {
 }
 
 $products = array(
-	array( 'Coffret douceur — DÉMO', 'bebe', '24.90', '', 20 ),
-	array( 'Veilleuse nuage — DÉMO', 'chambre-deco', '29.90', '', 20 ),
-	array( 'Tour d’éveil — DÉMO', 'bebe', '19.90', '', 20 ),
-	array( 'Gigoteuse fleurie — DÉMO', 'bebe', '34.90', '', 20 ),
-	array( 'Doudou ourson — DÉMO', 'peluches', '22.90', '', 20 ),
-	array( 'Biberon doux — DÉMO', 'bebe', '17.90', '', 20 ),
-	array( 'Cape de bain — DÉMO', 'cadeaux', '27.90', '', 20 ),
-	array( 'Mobile musical — DÉMO', 'tendances', '39.90', '', 20 ),
-	array( 'Coffret naissance en promotion — DÉMO', 'cadeaux', '39.90', '31.90', 12 ),
-	array( 'Pyjama indisponible — DÉMO', 'bebe', '21.90', '', 0 ),
+	array( 'Plaid nuage — DÉMO', 'maison-cosy', '34.90', '', 20 ),
+	array( 'Coussin étoile — DÉMO', 'maison-cosy', '24.90', '', 20 ),
+	array( 'Affiche pastel — DÉMO', 'deco-murale', '17.90', '', 20 ),
+	array( 'Stickers muraux — DÉMO', 'deco-murale', '12.90', '', 20 ),
+	array( 'Carnet nuage — DÉMO', 'papeterie', '14.90', '', 20 ),
+	array( 'Boîte à souvenirs — DÉMO', 'papeterie', '27.90', '', 20 ),
+	array( 'Coffret douceur — DÉMO', 'cadeaux', '39.90', '31.90', 12 ),
+	array( 'Bougie cocon — DÉMO', 'tendances', '19.90', '', 20 ),
+	array( 'Chaussons douillets — DÉMO', 'pyjamas-detente', '22.90', '', 20 ),
+	array( 'Pyjama indisponible — DÉMO', 'pyjamas-detente', '29.90', '', 0 ),
 );
 
 foreach ( $products as $index => $fixture ) {
@@ -57,7 +57,7 @@ if ( ! get_page_by_path( $variable_slug, OBJECT, 'product' ) ) {
 	$variable->set_catalog_visibility( 'visible' );
 	$variable->set_description( 'Produit variable de démonstration locale. Remplacer toutes les données avant la mise en production.' );
 	$variable->set_short_description( 'Cas de test des tailles, clairement identifié comme démonstration.' );
-	$variable->set_category_ids( array( $term_ids['bebe'] ) );
+	$variable->set_category_ids( array( $term_ids['pyjamas-detente'] ) );
 	$attribute = new WC_Product_Attribute();
 	$attribute->set_id( 0 );
 	$attribute->set_name( 'Taille' );

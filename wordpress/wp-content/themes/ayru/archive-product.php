@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 get_header();
 $theme_uri = get_template_directory_uri();
-$is_baby   = is_product_category( 'bebe' );
+$is_baby   = is_product_category( 'maison-cosy' );
 ?>
 <main id="main-content" class="shop-layout section-shell">
 	<?php woocommerce_breadcrumb(); ?>
