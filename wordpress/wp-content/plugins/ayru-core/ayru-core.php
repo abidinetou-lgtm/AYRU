@@ -32,7 +32,8 @@ const VERSION = '1.1.6';
 		add_shortcode( 'ayru_contact', array( __CLASS__, 'contact_shortcode' ) );
 		add_filter( 'query_vars', array( __CLASS__, 'query_vars' ) );
 		add_filter( 'the_content', array( __CLASS__, 'shared_list_content' ) );
-		add_action( 'woocommerce_product_options_general_product_data', array( __CLASS__, 'product_compliance_fields' ) );
+		add_filter( 'woocommerce_product_data_tabs', array( __CLASS__, 'product_data_tab' ) );
+		add_action( 'woocommerce_product_data_panels', array( __CLASS__, 'product_data_panel' ) );
 		add_action( 'woocommerce_process_product_meta', array( __CLASS__, 'save_product_compliance_fields' ) );
 		add_action( 'woocommerce_order_status_processing', array( __CLASS__, 'record_list_purchases' ), 20 );
 		add_action( 'woocommerce_order_status_completed', array( __CLASS__, 'record_list_purchases' ), 20 );
@@ -243,10 +244,104 @@ const VERSION = '1.1.6';
 		wp_safe_redirect( add_query_arg( 'newsletter', 'ok', wp_get_referer() ?: home_url( '/' ) ) ); exit;
 	}
 
-	public static function product_compliance_fields(): void {
-		foreach ( array( '_ayru_manufacturer' => 'Fabricant', '_ayru_eu_responsible' => 'Responsable UE', '_ayru_age_warning' => 'Âge / avertissements', '_ayru_safety_info' => 'Informations de sécurité', '_ayru_product_reference' => 'Référence produit' ) as $id => $label ) {
-			woocommerce_wp_textarea_input( array( 'id' => $id, 'label' => $label, 'description' => 'Afficher uniquement des informations fournisseur vérifiées.', 'desc_tip' => true ) );
+	/**
+	 * Definition des champs produit AYRU.
+	 *
+	 * Deux groupes. Le groupe « conformite » est destine a l'affichage public
+	 * dans l'onglet « Securite & tracabilite » de la fiche produit. Le groupe
+	 * « fournisseur » est strictement interne : il ne doit jamais etre rendu
+	 * cote client, le prix d'achat notamment.
+	 *
+	 * @return array<string, array{titre: string, publie: bool, champs: array<string, string>}>
+	 */
+	public static function product_field_groups(): array {
+		return array(
+			'compliance' => array(
+				'titre'  => 'Conformité et sécurité',
+				'publie' => true,
+				'champs' => array(
+					'_ayru_manufacturer'      => 'Fabricant',
+					'_ayru_eu_responsible'    => 'Responsable UE',
+					'_ayru_product_reference' => 'Référence produit',
+					'_ayru_country_origin'    => 'Pays d’origine',
+					'_ayru_materials'         => 'Matières',
+					'_ayru_dimensions'        => 'Dimensions',
+					'_ayru_ce_marking'        => 'Marquage CE',
+					'_ayru_age_warning'       => 'Âge / avertissements',
+					'_ayru_safety_info'       => 'Informations de sécurité',
+				),
+			),
+			'supplier' => array(
+				'titre'  => 'Fournisseur (interne, jamais affiché)',
+				'publie' => false,
+				'champs' => array(
+					'_ayru_supplier'      => 'Fournisseur',
+					'_ayru_supplier_sku'  => 'Référence fournisseur',
+					'_ayru_supplier_cost' => 'Prix d’achat HT',
+					'_ayru_supplier_url'  => 'Lien fiche fournisseur',
+				),
+			),
+		);
+	}
+
+	/**
+	 * Toutes les cles de meta gerees, tous groupes confondus.
+	 *
+	 * @return string[]
+	 */
+	public static function product_field_keys(): array {
+		$keys = array();
+		foreach ( self::product_field_groups() as $group ) {
+			$keys = array_merge( $keys, array_keys( $group['champs'] ) );
 		}
+		return $keys;
+	}
+
+	/**
+	 * Declare l'onglet AYRU dans la boite « Donnees produit ».
+	 *
+	 * @param array<string, mixed> $tabs Onglets WooCommerce.
+	 * @return array<string, mixed>
+	 */
+	public static function product_data_tab( array $tabs ): array {
+		$tabs['ayru_sourcing'] = array(
+			'label'    => __( 'AYRU — Fournisseur & conformité', 'ayru' ),
+			'target'   => 'ayru_sourcing_data',
+			'class'    => array(),
+			'priority' => 65,
+		);
+		return $tabs;
+	}
+
+	/**
+	 * Rend le panneau de l'onglet AYRU.
+	 */
+	public static function product_data_panel(): void {
+		echo '<div id="ayru_sourcing_data" class="panel woocommerce_options_panel">';
+		foreach ( self::product_field_groups() as $key => $group ) {
+			printf(
+				'<div class="options_group"><p style="padding:8px 12px;margin:0;font-weight:600">%s</p>',
+				esc_html( $group['titre'] )
+			);
+			if ( ! $group['publie'] ) {
+				echo '<p style="padding:0 12px 8px;margin:0;color:#646970">Ces informations restent internes : elles ne sont jamais affichées sur le site.</p>';
+			}
+			foreach ( $group['champs'] as $id => $label ) {
+				woocommerce_wp_textarea_input(
+					array(
+						'id'          => $id,
+						'label'       => $label,
+						'description' => $group['publie']
+							? 'Afficher uniquement des informations fournisseur vérifiées.'
+							: 'Usage interne : marge, réassort, traçabilité.',
+						'desc_tip'    => true,
+						'rows'        => 2,
+					)
+				);
+			}
+			echo '</div>';
+		}
+		echo '</div>';
 	}
 
 	public static function attach_list_to_cart_item( array $cart_item_data, int $product_id, int $variation_id ): array {
@@ -263,7 +358,7 @@ const VERSION = '1.1.6';
 	}
 
 	public static function save_product_compliance_fields( int $post_id ): void {
-		foreach ( array( '_ayru_manufacturer', '_ayru_eu_responsible', '_ayru_age_warning', '_ayru_safety_info', '_ayru_product_reference' ) as $key ) { if ( isset( $_POST[ $key ] ) ) { update_post_meta( $post_id, $key, sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) ) ); } }
+		foreach ( self::product_field_keys() as $key ) { if ( isset( $_POST[ $key ] ) ) { update_post_meta( $post_id, $key, sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) ) ); } }
 	}
 
 	public static function record_list_purchases( int $order_id ): void {

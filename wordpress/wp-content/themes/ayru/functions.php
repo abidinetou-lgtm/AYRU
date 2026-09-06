@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AYRU_VERSION', '1.6.1' );
+define( 'AYRU_VERSION', '1.7.0' );
 
 function ayru_setup(): void {
 	load_theme_textdomain( 'ayru', get_template_directory() . '/languages' );
@@ -240,13 +240,21 @@ add_action( 'woocommerce_after_add_to_cart_form', 'ayru_add_to_list_button', 12 
 function ayru_product_compliance_tab( array $tabs ): array {
 	global $product;
 	if ( ! $product instanceof WC_Product ) { return $tabs; }
-	$fields = array_filter( array(
-		'Fabricant' => $product->get_meta( '_ayru_manufacturer' ),
-		'Responsable UE' => $product->get_meta( '_ayru_eu_responsible' ),
-		'Référence produit' => $product->get_meta( '_ayru_product_reference' ),
-		'Âge / avertissements' => $product->get_meta( '_ayru_age_warning' ),
-		'Informations de sécurité' => $product->get_meta( '_ayru_safety_info' ),
-	) );
+	// La liste des champs publics vient du plugin : le theme ne la duplique pas,
+	// et les champs fournisseur (prix d'achat notamment) ne sont jamais exposes.
+	$fields = array();
+	if ( class_exists( 'AYRU_Core' ) ) {
+		$groups = AYRU_Core::product_field_groups();
+		foreach ( $groups as $group ) {
+			if ( empty( $group['publie'] ) ) {
+				continue;
+			}
+			foreach ( $group['champs'] as $key => $label ) {
+				$fields[ $label ] = $product->get_meta( $key );
+			}
+		}
+	}
+	$fields = array_filter( $fields );
 	if ( $fields ) {
 		$tabs['ayru_compliance'] = array(
 			'title' => __( 'Sécurité & traçabilité', 'ayru' ),
