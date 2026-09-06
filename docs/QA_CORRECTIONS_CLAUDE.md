@@ -134,5 +134,24 @@ Ces points ne sont pas des bugs : ce sont des contenus à fournir.
 - Liens sociaux : `ayru_instagram_url`, `ayru_tiktok_url`, `ayru_pinterest_url`
   ne sont pas renseignés dans le personnalisateur, la rangée reste donc vide.
 - Contenus légaux : mentions, CGV, confidentialité, cookies.
-- Passerelle de paiement.
+- Passerelle de paiement : l'extension officielle `woocommerce-gateway-stripe`
+  est installee et activee. Il ne manque que les cles API (mode test puis
+  production) a saisir dans WooCommerce > Reglages > Paiements > Stripe.
 - Suppression des fixtures « DÉMO ».
+
+---
+
+## Consentement et mesure d'audience (revision 1.3.0)
+
+Bandeau de consentement conforme aux regles CNIL : refus aussi simple que
+l'acceptation, aucun pre-cochage, choix conserve six mois, reouverture possible
+depuis la page Cookies via un element portant `data-consent-reset`.
+
+Les traceurs (GA4, Pixel Meta, Pixel TikTok) sont declares dans le
+personnalisateur. Ils sont emis en `type="text/plain"` avec l'attribut
+`data-ayru-consent` : le navigateur ne les execute pas tant que l'internaute
+n'a pas accepte. Sans identifiant renseigne, aucun script n'est emis.
+
+Verifie au rendu : bandeau affiche au premier passage, masque apres choix,
+choix conserve apres rechargement, boutons non recouverts par la barre de
+navigation basse.
