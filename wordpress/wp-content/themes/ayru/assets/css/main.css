@@ -729,3 +729,16 @@ p, .hero-lead { text-wrap: pretty; }
        `contain: paint` confine la peinture au conteneur. Mesure apres
        correction : 390 px, et le defilement interne du rail reste intact. */
 .product-rail, .category-shortcuts, .catalog-pending, .subcategories { contain: paint; }
+
+/* 22. Emplacements publicitaires (guides uniquement).
+       La hauteur est reservee pour eviter tout decalage de mise en page a
+       l arrivee de l annonce : un saut de contenu degrade le CLS, l un des
+       trois Core Web Vitals que Google mesure pour le referencement.
+       L encart reste discret et clairement identifie comme publicite. */
+.ayru-ad { display: block; min-height: 280px; margin: 34px 0; padding: 14px;
+  border: 1px solid var(--ayru-border); border-radius: var(--ayru-radius);
+  background: #fdfcff; }
+.ayru-ad__mention { display: block; margin-bottom: 8px; color: var(--ayru-muted);
+  font-size: .62rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.ayru-ad ins { display: block; min-height: 240px; }
+@media (max-width: 680px) { .ayru-ad { min-height: 300px; margin: 26px 0; padding: 12px; } }

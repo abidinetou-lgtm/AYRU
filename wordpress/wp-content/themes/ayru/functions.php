@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AYRU_VERSION', '1.7.0' );
+define( 'AYRU_VERSION', '1.8.0' );
 
 function ayru_setup(): void {
 	load_theme_textdomain( 'ayru', get_template_directory() . '/languages' );
@@ -84,6 +84,8 @@ function ayru_customize_register( WP_Customize_Manager $customizer ): void {
 		'ga4_id'        => array( 'Google Analytics 4 (G-XXXXXXXXXX)', '' ),
 		'meta_pixel_id' => array( 'Pixel Meta / Instagram (identifiant)', '' ),
 		'tiktok_pixel_id' => array( 'Pixel TikTok (identifiant)', '' ),
+		'adsense_client' => array( 'AdSense — identifiant éditeur (ca-pub-…)', '' ),
+		'adsense_slot'   => array( 'AdSense — identifiant de bloc (guides)', '' ),
 	);
 	foreach ( $settings as $key => $config ) {
 		$is_url   = str_ends_with( $key, '_url' );
@@ -394,3 +396,65 @@ function ayru_tracking_scripts(): void {
 	}
 }
 add_action( 'wp_footer', 'ayru_tracking_scripts', 20 );
+
+/**
+ * Emplacement publicitaire AdSense.
+ *
+ * Regles appliquees, conformes au cahier des charges et au droit francais :
+ * - rien n'est rendu tant qu'aucun identifiant editeur n'est configure, donc
+ *   aucun encart vide ne pollue la page ;
+ * - reserve uniquement aux pages editoriales. Les pages boutique, produit,
+ *   panier, commande et compte ne doivent jamais afficher de publicite : un
+ *   visiteur envoye chez un concurrent pour quelques centimes coute bien plus
+ *   cher que ce qu'il rapporte ;
+ * - la hauteur est reservee en CSS pour ne pas provoquer de decalage de mise
+ *   en page, ce qui degraderait les Core Web Vitals ;
+ * - le script ne s'execute qu'apres acceptation du bandeau de consentement,
+ *   comme les autres traceurs ;
+ * - l'encart porte une mention « Publicite » : un contenu commercial doit
+ *   etre identifiable et ne jamais se faire passer pour un contenu editorial.
+ *
+ * @param string $position Identifiant lisible de l'emplacement, pour le CSS.
+ */
+function ayru_ad_slot( string $position = 'article' ): void {
+	$client = trim( (string) get_theme_mod( 'ayru_adsense_client', '' ) );
+	$slot   = trim( (string) get_theme_mod( 'ayru_adsense_slot', '' ) );
+
+	if ( '' === $client || '' === $slot ) {
+		return;
+	}
+
+	// Ceinture et bretelles : jamais de publicite sur un parcours d'achat.
+	if ( function_exists( 'is_woocommerce' ) && ( is_woocommerce() || is_cart() || is_checkout() || is_account_page() ) ) {
+		return;
+	}
+
+	printf(
+		'<aside class="ayru-ad ayru-ad--%1$s" aria-label="Publicité" data-nosnippet><span class="ayru-ad__mention">Publicité</span><ins class="adsbygoogle" style="display:block" data-ad-client="%2$s" data-ad-slot="%3$s" data-ad-format="auto" data-full-width-responsive="true"></ins><script type="text/plain" data-ayru-consent>(adsbygoogle = window.adsbygoogle || []).push({});</script></aside>',
+		esc_attr( $position ),
+		esc_attr( $client ),
+		esc_attr( $slot )
+	);
+}
+
+/**
+ * Charge la bibliotheque AdSense, elle aussi sous consentement.
+ */
+function ayru_adsense_loader(): void {
+	$client = trim( (string) get_theme_mod( 'ayru_adsense_client', '' ) );
+	$slot   = trim( (string) get_theme_mod( 'ayru_adsense_slot', '' ) );
+
+	// Inutile de charger la bibliotheque sur des pages qui n'affichent aucun
+	// encart : c'est une requete reseau et un cout de performance pour rien.
+	if ( '' === $client || '' === $slot || is_admin() ) {
+		return;
+	}
+	if ( ! is_post_type_archive( 'guide' ) && ! is_singular( 'guide' ) ) {
+		return;
+	}
+	printf(
+		'<script type="text/plain" data-ayru-consent async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=%s" crossorigin="anonymous"></script>',
+		esc_attr( $client )
+	);
+}
+add_action( 'wp_footer', 'ayru_adsense_loader', 21 );
