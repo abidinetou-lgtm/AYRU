@@ -718,3 +718,14 @@ p, .hero-lead { text-wrap: pretty; }
 .woocommerce a.button.button--primary:hover,
 .woocommerce button.button.button--primary:hover { background: #28205f; }
 .woocommerce a.button.button--secondary { border-color: #c9c0e8; background: rgba(255,255,255,.78); color: var(--ayru-ink); }
+
+/* 21. Decalage horizontal apres ouverture puis fermeture d un tiroir.
+       Cause : les rangees a defilement horizontal sont bien des conteneurs
+       `overflow-x: auto`, mais Chrome comptait tout de meme leur contenu
+       interne dans `documentElement.scrollWidth` (516 px pour un viewport de
+       390). Le filet `html { overflow-x: hidden }` masquait la barre sans
+       empecher un panoramique programmatique : ouvrir puis fermer le panier
+       laissait la page decalee, avec une bande vide a droite.
+       `contain: paint` confine la peinture au conteneur. Mesure apres
+       correction : 390 px, et le defilement interne du rail reste intact. */
+.product-rail, .category-shortcuts, .catalog-pending, .subcategories { contain: paint; }
