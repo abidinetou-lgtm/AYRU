@@ -19,3 +19,6 @@ Desktop.ini
 wordpress/wp-content/uploads/
 wordpress/wp-content/upgrade/
 wordpress/wp-content/cache/
+
+# Sauvegardes : contiennent des donnees et des cles
+backups/
